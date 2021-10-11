@@ -1,12 +1,23 @@
-﻿using System;
+﻿using System.Threading;
+using Controller;
 
-namespace racer
+namespace View
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Data.Initialize();
+            Data.NextRace();
+            Data.CurrentRace.RandomizeEquipment();
+
+            Visual.Initialize(Data.CurrentRace.Track);
+
+            Data.CurrentRace.DriversChanged += Visual.OnDriversChanged;
+            Data.CurrentRace.Start();
+
+
+            for (;;) Thread.Sleep(100);
         }
     }
 }

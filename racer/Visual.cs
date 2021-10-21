@@ -20,11 +20,19 @@ namespace View
             SectionHeight = TrackHorizontal.Length;
 
             DrawTrack(track);
+            
+            Data.CurrentRace.DriversChanged += OnDriversChanged;
+            Data.NewRace += OnNewRace;
         }
 
         public static void OnDriversChanged(DriversChangedEventArgs e)
         {
             DrawTrack(e.Track);
+        }
+
+        public static void OnNewRace(RaceEventArgs e)
+        {
+            Initialize(e.Track);
         }
 
         private static void DrawTrack(Track track)
@@ -36,6 +44,7 @@ namespace View
         // int direction: 0->north, 1->east, 2->south, 3->west
         private static void LoadTrack(Track track, int startX = 0, int startY = 0, int direction = 1)
         {
+            Console.Clear();
             Graphics.Clear();
 
             int x = startX;
@@ -186,7 +195,15 @@ namespace View
 
         private static string GenPlayerGraphic(IParticipant participant)
         {
-            string playerGraphic = string.IsNullOrEmpty(participant.Name) ? Racer[0] : participant.Name[..1];
+            string playerGraphic;
+            if (participant.Equipment.IsBroken)
+            {
+                playerGraphic = "*";
+            }
+            else
+            {
+                playerGraphic = string.IsNullOrEmpty(participant.Name) ? Racer[0] : participant.Name[..1];
+            }
             return playerGraphic;
         }
 
@@ -198,8 +215,8 @@ namespace View
         private static readonly string[] FinishHorizontal =
         {
             "════════",
-            "   1#   ",
-            "   2#   ",
+            "   1  # ",
+            "  2   # ",
             "════════"
         };
 
@@ -207,15 +224,15 @@ namespace View
         {
             "║      ║",
             "║######║",
-            "║ 1  2 ║",
-            "║      ║"
+            "║ 1    ║",
+            "║    2 ║"
         };
 
         private static readonly string[] TrackHorizontal =
         {
             "════════",
             "    1   ",
-            "    2   ",
+            "   2    ",
             "════════"
         };
 

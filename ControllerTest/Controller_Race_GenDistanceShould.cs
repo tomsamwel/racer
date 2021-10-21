@@ -28,7 +28,7 @@ namespace ControllerTest
                 IsBroken = false
             };
 
-            int result = _race.GenDistance(car);
+            int result = _race.GenerateDistance(car);
 
             Assert.Greater(result, 0);
         }
@@ -44,7 +44,7 @@ namespace ControllerTest
                 IsBroken = false
             };
 
-            int result = _race.GenDistance(car);
+            int result = _race.GenerateDistance(car);
 
             Assert.Less(result, 101);
         }
@@ -60,7 +60,7 @@ namespace ControllerTest
                 IsBroken = false
             };
 
-            int result = _race.GenDistance(car);
+            int result = _race.GenerateDistance(car);
 
             Assert.Less(result, 101);
         }
@@ -76,7 +76,7 @@ namespace ControllerTest
                 IsBroken = true
             };
 
-            int result = _race.GenDistance(car);
+            int result = _race.GenerateDistance(car);
 
             Assert.Greater(result, 0);
         }

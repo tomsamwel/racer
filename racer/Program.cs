@@ -12,8 +12,7 @@ namespace View
             Data.CurrentRace.RandomizeEquipment();
 
             Visual.Initialize(Data.CurrentRace.Track);
-
-            Data.CurrentRace.DriversChanged += Visual.OnDriversChanged;
+            
             Data.CurrentRace.Start();
 
 

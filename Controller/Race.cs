@@ -10,9 +10,14 @@ namespace Controller
     {
         public delegate void OnDriversChanged(DriversChangedEventArgs e);
 
+        public delegate void OnRaceEvent(RaceEventArgs e);
+
+
         private readonly Dictionary<Section, SectionData> _positions;
         private readonly Random _random;
         private readonly Timer _timer;
+        
+        public Dictionary<IParticipant, ParticipantData> _laps;
 
         public Race(Track track, List<IParticipant> participants)
         {
@@ -23,22 +28,40 @@ namespace Controller
 
             _random = new Random(DateTime.Now.Millisecond);
 
-            _timer = new Timer(500);
+            _timer = new Timer(200);
             _timer.Elapsed += OnTimedEvent;
 
             _positions = new Dictionary<Section, SectionData>();
+            _laps = new Dictionary<IParticipant, ParticipantData>();
+            
+            Laps = 3;
 
             PlaceParticipants();
         }
+
+        private int Laps { get; }
 
         public Track Track { get; set; }
         public List<IParticipant> Participants { get; set; }
         public DateTime StartTime { get; set; }
         public event OnDriversChanged DriversChanged;
+        public event OnRaceEvent RaceEnd;
 
+        
         public void Start()
         {
+            StartTime = DateTime.Now;
             _timer.Start();
+        }
+
+        private void EndRace()
+        {
+            _timer.Stop();
+            _timer.Elapsed -= OnTimedEvent;
+            DriversChanged = null;
+
+            RaceEnd?.Invoke(new RaceEventArgs());
+            RaceEnd = null;
         }
 
         private void OnTimedEvent(object sender, EventArgs e)
@@ -64,30 +87,74 @@ namespace Controller
 
                 if (sectionData.Left != null)
                 {
-                    sectionData.DistanceLeft += GenDistance(sectionData.Left.Equipment);
+                    IParticipant participant = sectionData.Left;
+                    LinkedListNode<Section> toSection = GetNextSection(section);
+                    SectionData toSectionData = GetSectionData(toSection.Value);
+                    sectionData.DistanceLeft += GenerateDistance(participant.Equipment);
+                    ChanceToBreakOrRepair(participant.Equipment);
+                    
                     if (sectionData.DistanceLeft > 100)
                     {
-                        bool hasMoved = MoveParticipant(sectionData.Left, section, sectionData.DistanceLeft - 100);
-                        if (hasMoved)
+                        if (toSectionData.Left == null)
                         {
+                            toSectionData.Left = participant;
+                            toSectionData.DistanceLeft = sectionData.DistanceLeft - 100;
+                            participantMoved = true;
                             sectionData.Left = null;
                             sectionData.DistanceLeft = 0;
+                            if (section.Value.SectionType == SectionTypes.Finish)
+                            {
+                                LapParticipant(participant, toSection);
+                            }
+                        }
+                        else if (toSectionData.Right == null)
+                        {
+                            toSectionData.Right = participant;
+                            toSectionData.DistanceRight = sectionData.DistanceLeft - 100;
                             participantMoved = true;
+                            sectionData.Left = null;
+                            sectionData.DistanceLeft = 0;
+                            if (section.Value.SectionType == SectionTypes.Finish)
+                            {
+                                LapParticipant(participant, toSection);
+                            }
                         }
                     }
                 }
 
                 if (sectionData.Right != null)
                 {
-                    sectionData.DistanceRight += GenDistance(sectionData.Right.Equipment);
+                    IParticipant participant = sectionData.Right;
+                    LinkedListNode<Section> toSection = GetNextSection(section);
+                    SectionData toSectionData = GetSectionData(toSection.Value);
+                    sectionData.DistanceRight += GenerateDistance(participant.Equipment);
+                    ChanceToBreakOrRepair(participant.Equipment);
+
                     if (sectionData.DistanceRight > 100)
                     {
-                        bool hasMoved = MoveParticipant(sectionData.Right, section, sectionData.DistanceRight - 100);
-                        if (hasMoved)
+                        if (toSectionData.Left == null)
                         {
+                            toSectionData.Left = participant;
+                            toSectionData.DistanceLeft = sectionData.DistanceRight - 100;
+                            participantMoved = true;
                             sectionData.Right = null;
                             sectionData.DistanceRight = 0;
+                            if (section.Value.SectionType == SectionTypes.Finish)
+                            {
+                                LapParticipant(participant, toSection);
+                            }
+                        }
+                        else if (toSectionData.Right == null)
+                        {
+                            toSectionData.Right = participant;
+                            toSectionData.DistanceRight = sectionData.DistanceRight - 100;
                             participantMoved = true;
+                            sectionData.Right = null;
+                            sectionData.DistanceRight = 0;
+                            if (section.Value.SectionType == SectionTypes.Finish)
+                            {
+                                LapParticipant(participant, toSection);
+                            }
                         }
                     }
                 }
@@ -98,44 +165,69 @@ namespace Controller
             return participantMoved;
         }
 
-        private bool MoveParticipant(IParticipant participant, LinkedListNode<Section> currentSection, int distance)
+        private void ChanceToBreakOrRepair(IEquipment equipment)
         {
-            bool hasMoved;
-            hasMoved = false;
-            SectionData nextSectionData = GetNextSectionData(currentSection);
-
-            if (nextSectionData.Left == null)
+            if (equipment.IsBroken)
             {
-                nextSectionData.Left = participant;
-                nextSectionData.DistanceLeft = distance;
-                hasMoved = true;
+                equipment.IsBroken = _random.Next(0, 10) != 1;
             }
-            else if (nextSectionData.Right == null)
+            else if (_random.Next(0,50) == 1)
             {
-                nextSectionData.Right = participant;
-                nextSectionData.DistanceRight = distance;
-                hasMoved = true;
+                equipment.IsBroken = true;
+                equipment.Speed /= 2;
+            }
+        }
+
+        private void LapParticipant(IParticipant participant, LinkedListNode<Section> currentSection)
+        {
+            ParticipantData participantData = GetParticipantData(participant);
+            participantData.AddLap();
+
+            if (participantData.CurrentLap > Laps) FinishParticipant(participant, currentSection);
+        }
+
+        private void FinishParticipant(IParticipant participant, LinkedListNode<Section> currentSection)
+        {
+            SectionData sectionData = GetSectionData(currentSection.Value);
+            if (sectionData.Left == participant)
+            {
+                sectionData.Left = null;
+                sectionData.DistanceLeft = 0;
             }
 
-            return hasMoved;
+            if (sectionData.Right == participant)
+            {
+                sectionData.Right = null;
+                sectionData.DistanceRight = 0;
+            }
+
+            if (AllParticipantsFinished())
+            {
+                EndRace();
+            }
         }
-
-        private SectionData GetNextSectionData(LinkedListNode<Section> section)
+        
+        private bool AllParticipantsFinished()
         {
-            LinkedListNode<Section> nextSection = section.Next ?? Track.Sections.First;
-            SectionData nextSectionData = nextSection != null ? GetSectionData(nextSection.Value) : null;
-            return nextSectionData;
+            foreach (ParticipantData participantData in Participants.Select(GetParticipantData))
+            {
+                if (participantData.CurrentLap <= Laps) return false;
+            }
+
+            return true;
         }
+        
+        private LinkedListNode<Section> GetNextSection(LinkedListNode<Section> section) => section.Next ?? Track.Sections.First;
 
-        public int GenDistance(IParticipant participant)
+        public int GenerateDistance(IEquipment equipment)
         {
-            return GenDistance(participant.Equipment);
-        }
+            int distance = 0;
+            if (equipment.IsBroken)
+            {
+                return distance;
+            }
 
-        public int GenDistance(IEquipment equipment)
-        {
-            int distance;
-
+            // TODO: create a better distance generator
             distance = (equipment.Quality + equipment.Speed + equipment.Performance + _random.Next(1, 100)) / 4;
 
             // boundary 1..100
@@ -150,6 +242,14 @@ namespace Controller
 
             return _positions[section];
         }
+
+        public ParticipantData GetParticipantData(IParticipant participant)
+        {
+            if (_laps.ContainsKey(participant) == false) _laps.Add(participant, new ParticipantData());
+            
+            return _laps[participant];
+        }
+
 
         public void RandomizeEquipment()
         {
@@ -168,17 +268,17 @@ namespace Controller
 
         private void PlaceParticipants()
         {
-            Queue<IParticipant> participantsToPlace = new Queue<IParticipant>(Participants);
-            
+            Queue<IParticipant> participants = new Queue<IParticipant>(Participants);
+
             foreach (Section section in Track.Sections.Where(section => section.SectionType == SectionTypes.StartGrid))
             {
                 SectionData sectionData = GetSectionData(section);
 
-                sectionData.Left ??= participantsToPlace.Dequeue();
-                if (participantsToPlace.Count == 0) return;
+                sectionData.Left ??= participants.Dequeue();
+                if (participants.Count == 0) return;
 
-                sectionData.Right ??= participantsToPlace.Dequeue();
-                if (participantsToPlace.Count == 0) return;
+                sectionData.Right ??= participants.Dequeue();
+                if (participants.Count == 0) return;
             }
         }
     }

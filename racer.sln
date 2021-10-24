@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.810.8
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "View", "racer\View.csproj", "{A5FB84E4-5E79-42F8-BC75-28414E146585}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "View", "racer\View.csproj", "{A5FB84E4-5E79-42F8-BC75-28414E146585}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj", "{7BECEEBD-1236-4BDE-A692-3CEB6043B54A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Model", "Model\Model.csproj", "{7BECEEBD-1236-4BDE-A692-3CEB6043B54A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controller", "Controller\Controller.csproj", "{5076A238-48FE-4FB6-9B7F-6190595B5460}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Controller", "Controller\Controller.csproj", "{5076A238-48FE-4FB6-9B7F-6190595B5460}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControllerTest", "ControllerTest\ControllerTest.csproj", "{6CCE9C20-8427-436F-BA37-39C166D7DE04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControllerTest", "ControllerTest\ControllerTest.csproj", "{6CCE9C20-8427-436F-BA37-39C166D7DE04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfVisual", "WpfVisual\WpfVisual.csproj", "{B18AA4F4-B358-41A4-884A-CC6E3CA48262}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{6CCE9C20-8427-436F-BA37-39C166D7DE04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CCE9C20-8427-436F-BA37-39C166D7DE04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6CCE9C20-8427-436F-BA37-39C166D7DE04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B18AA4F4-B358-41A4-884A-CC6E3CA48262}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B18AA4F4-B358-41A4-884A-CC6E3CA48262}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B18AA4F4-B358-41A4-884A-CC6E3CA48262}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B18AA4F4-B358-41A4-884A-CC6E3CA48262}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

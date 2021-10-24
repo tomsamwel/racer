@@ -7,7 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="graphics\" />
+    <None Remove="graphics\cornerBottomLeft.png" />
+    <None Remove="graphics\cornerBottomRight.png" />
+    <None Remove="graphics\cornerTopLeft.png" />
+    <None Remove="graphics\cornerTopRight.png" />
+    <None Remove="graphics\finishHorizontal.png" />
+    <None Remove="graphics\finishVertical.png" />
+    <None Remove="graphics\trackHorizontal.png" />
+    <None Remove="graphics\trackVertical.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="graphics\cornerBottomLeft.png" />
+    <Content Include="graphics\cornerBottomRight.png" />
+    <Content Include="graphics\cornerTopLeft.png" />
+    <Content Include="graphics\cornerTopRight.png" />
+    <Content Include="graphics\finishHorizontal.png" />
+    <Content Include="graphics\finishVertical.png" />
+    <Content Include="graphics\trackHorizontal.png" />
+    <Content Include="graphics\trackVertical.png" />
   </ItemGroup>
 
 </Project>

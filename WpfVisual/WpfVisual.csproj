@@ -18,18 +18,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="graphics\cornerBottomLeft.png" />
-    <Content Include="graphics\cornerBottomRight.png" />
-    <Content Include="graphics\cornerTopLeft.png" />
-    <Content Include="graphics\cornerTopRight.png" />
-    <Content Include="graphics\finishHorizontal.png" />
-    <Content Include="graphics\finishVertical.png" />
-    <Content Include="graphics\trackHorizontal.png" />
-    <Content Include="graphics\trackVertical.png" />
+    <Content Include="graphics\CornerBottomLeft.png" />
+    <Content Include="graphics\CornerBottomRight.png" />
+    <Content Include="graphics\CornerTopLeft.png" />
+    <Content Include="graphics\CornerTopRight.png" />
+    <Content Include="graphics\FinishHorizontal.png" />
+    <Content Include="graphics\FinishVertical.png" />
+    <Content Include="graphics\TrackHorizontal.png" />
+    <Content Include="graphics\TrackVertical.png" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Controller\Controller.csproj" />
   </ItemGroup>
 
 </Project>

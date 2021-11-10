@@ -8,49 +8,50 @@ using Color = System.Drawing.Color;
 
 namespace WpfVisual
 {
-    static class Image
+    static class ImageHandler
     {
-        private static Dictionary<string, Bitmap> Cache;
+        private static Dictionary<string, Bitmap> _cache;
+
+        public static void Initialize()
+        {
+            _cache = new Dictionary<string, Bitmap>();
+        }
 
         public static Bitmap GetEmptyBitmap(int x, int y)
         {
-            if (Cache.ContainsKey("empty"))
+            if (_cache.ContainsKey("empty"))
             {
-                return (Bitmap)Cache["empty"].Clone();
+                return (Bitmap)_cache["empty"].Clone();
             }
 
             Bitmap bitmap = new Bitmap(x, y);
 
-            // Loop through the images pixels to reset color.
-            for (x = 0; x < bitmap.Width; x++)
-            {
-                for (y = 0; y < bitmap.Height; y++)
-                {
-                    Color newColor = Color.FromArgb(0, 130, 0);
-                    bitmap.SetPixel(x, y, newColor);
-                }
-            }
+            Graphics graphics = Graphics.FromImage(bitmap);
+            graphics.Clear(Color.Green);
 
-            Cache.Add("empty", bitmap);
+            _cache.Add("empty", bitmap);
 
-            return (Bitmap)Cache["empty"].Clone();
+            return (Bitmap)_cache["empty"].Clone();
 
         }
 
         public static Bitmap GetSectionImage(string sectionName)
         {
-            if (Cache.ContainsKey(sectionName))
+            if (_cache.ContainsKey(sectionName))
             {
-                return Cache[sectionName];
+                return _cache[sectionName];
             }
 
-            Bitmap bitmap = new Bitmap(sectionName);
-            Cache.Add(sectionName, bitmap);
+            //todo : change to relative filepaths
+            string filename = $@"C:\Users\Tom\source\repos\racer\WpfVisual\graphics\{sectionName}.png";
 
-            return Cache[sectionName];
+            Bitmap bitmap = new Bitmap(filename);
+            _cache.Add(sectionName, bitmap);
+
+            return _cache[sectionName];
         }
 
-        public static void EmptyCache() => Cache.Clear();
+        public static void EmptyCache() => _cache.Clear();
 
         public static BitmapSource CreateBitmapSourceFromGdiBitmap(Bitmap bitmap)
         {

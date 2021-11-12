@@ -1,0 +1,31 @@
+﻿<Window x:Class="WpfVisual.RaceInfo"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfVisual"
+        mc:Ignorable="d"
+        Title="RaceInfo" Height="200" Width="400">
+    <Window.DataContext>
+        <local:StatisticsDataContext/>
+    </Window.DataContext>
+    <Grid>
+        <ListView ItemsSource="{Binding Participants}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"></GridViewColumn>
+                    <GridViewColumn Header="Performance" DisplayMemberBinding="{Binding Equipment.Performance}"></GridViewColumn>
+                    <GridViewColumn Header="Quality" DisplayMemberBinding="{Binding Equipment.Quality}"></GridViewColumn>
+                    <GridViewColumn Header="Speed" DisplayMemberBinding="{Binding Equipment.Speed}"></GridViewColumn>
+                    <GridViewColumn Header="Broken" DisplayMemberBinding="{Binding Equipment.IsBroken}"></GridViewColumn>
+
+                </GridView>
+            </ListView.View>
+        </ListView>
+        
+
+
+
+
+</Grid>
+</Window>

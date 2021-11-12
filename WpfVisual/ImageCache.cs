@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Reflection;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Color = System.Drawing.Color;
 
 namespace WpfVisual
 {
-    static class ImageHandler
+    static class ImageCache
     {
         private static Dictionary<string, Bitmap> _cache;
 
@@ -35,20 +36,20 @@ namespace WpfVisual
 
         }
 
-        public static Bitmap GetSectionImage(string sectionName)
+        public static Bitmap GetBitmapFromImage(string filename)
         {
-            if (_cache.ContainsKey(sectionName))
+            if (_cache.ContainsKey(filename))
             {
-                return _cache[sectionName];
+                return _cache[filename];
             }
 
-            //todo : change to relative filepaths
-            string filename = $@"C:\Users\Tom\source\repos\racer\WpfVisual\graphics\{sectionName}.png";
+            string filepath = $@".\graphics\{filename}";
+            //string i = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
 
-            Bitmap bitmap = new Bitmap(filename);
-            _cache.Add(sectionName, bitmap);
+            Bitmap bitmap = new Bitmap(filepath);
+            _cache.Add(filename, bitmap);
 
-            return _cache[sectionName];
+            return _cache[filename];
         }
 
         public static void EmptyCache() => _cache.Clear();

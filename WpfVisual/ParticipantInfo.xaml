@@ -1,0 +1,23 @@
+﻿<Window x:Class="WpfVisual.ParticipantInfo"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfVisual"
+        mc:Ignorable="d"
+        Title="ParticipantInfo" Height="200" Width="400">
+    <Window.DataContext>
+        <local:StatisticsDataContext/>
+    </Window.DataContext>
+    <Grid>
+        <ListView ItemsSource="{Binding Participants}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"></GridViewColumn>
+                    <GridViewColumn Header="Team Color" DisplayMemberBinding="{Binding TeamColor}"></GridViewColumn>
+                    <GridViewColumn Header="Points" DisplayMemberBinding="{Binding Points}"></GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>

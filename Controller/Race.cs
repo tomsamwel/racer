@@ -28,7 +28,7 @@ namespace Controller
 
             _random = new Random(DateTime.Now.Millisecond);
 
-            _timer = new Timer(200);
+            _timer = new Timer(100);
             _timer.Elapsed += OnTimedEvent;
 
             _positions = new Dictionary<Section, SectionData>();

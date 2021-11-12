@@ -34,7 +34,7 @@ namespace Controller
 
         private static void AddTracks()
         {
-            Competition.Queue.Enqueue(new Track("track 1",
+            Competition.Queue.Enqueue(new Track("Big turns",
                 new[]
                 {
                     SectionTypes.StartGrid, SectionTypes.StartGrid, SectionTypes.RightCorner, SectionTypes.LeftCorner,
@@ -44,10 +44,18 @@ namespace Controller
                     SectionTypes.Straight,
                     SectionTypes.LeftCorner, SectionTypes.Straight, SectionTypes.LeftCorner, SectionTypes.Finish
                 }));
-            Competition.Queue.Enqueue(new Track("track 2",
+            Competition.Queue.Enqueue(new Track("Loopy Track",
                 new[] {SectionTypes.StartGrid,SectionTypes.StartGrid, SectionTypes.Straight, SectionTypes.LeftCorner,SectionTypes.LeftCorner,SectionTypes.Straight,SectionTypes.Straight,SectionTypes.Straight,SectionTypes.Straight,SectionTypes.LeftCorner,SectionTypes.LeftCorner,SectionTypes.Finish}));
-            Competition.Queue.Enqueue(new Track("track 3",
-                new[] {SectionTypes.StartGrid,SectionTypes.StartGrid, SectionTypes.Straight,SectionTypes.RightCorner,SectionTypes.RightCorner, SectionTypes.Finish}));
+            Competition.Queue.Enqueue(new Track("Big loop with turns",
+                new[]
+                {
+                    SectionTypes.StartGrid, SectionTypes.StartGrid, SectionTypes.Straight, 
+                    SectionTypes.LeftCorner,
+                    SectionTypes.Straight, SectionTypes.Straight, SectionTypes.Straight, SectionTypes.LeftCorner,
+                    SectionTypes.LeftCorner, SectionTypes.RightCorner, SectionTypes.Straight, SectionTypes.Straight,
+                    SectionTypes.Straight,
+                    SectionTypes.LeftCorner, SectionTypes.Straight,SectionTypes.Straight, SectionTypes.LeftCorner, SectionTypes.Finish
+                }));
         }
 
         private static void OnRaceEnd(RaceEventArgs e)

@@ -24,10 +24,15 @@ namespace WpfVisual
     /// </summary>
     public partial class MainWindow : Window
     {
+        private ParticipantInfo _participantInfo;
+        private RaceInfo _raceInfo;
+
         public MainWindow()
         {
             InitializeComponent();
-            ImageHandler.Initialize();
+            _participantInfo = new ParticipantInfo();
+            _raceInfo = new RaceInfo();
+            ImageCache.Initialize();
             Data.Initialize();
             Data.NewRace += OnNewRace;
             Data.NextRace();
@@ -35,7 +40,11 @@ namespace WpfVisual
 
             Data.CurrentRace.Start();
 
+
             
+
+
+
 
             //for (; ; ) Thread.Sleep(100);
         }
@@ -46,7 +55,7 @@ namespace WpfVisual
 
             Data.CurrentRace.DriversChanged += OnDriversChanged;
 
-            this.Stage.Dispatcher.BeginInvoke(
+            Stage.Dispatcher.BeginInvoke(
                 DispatcherPriority.Render,
                 new Action(() =>
                 {
@@ -57,13 +66,33 @@ namespace WpfVisual
 
         private void OnDriversChanged(DriversChangedEventArgs e)
         {
-            this.Stage.Dispatcher.BeginInvoke(
+            Stage.Dispatcher.BeginInvoke(
                 DispatcherPriority.Render,
                 new Action(() =>
                 {
                     this.Stage.Source = null;
                     this.Stage.Source = Visual.DrawTrack(e.Track);
                 }));
+        }
+
+        private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+
+
+        private void MenuItem_ParticipantInfo_Click(object sender, RoutedEventArgs e)
+        {
+            //_participantInfo?.Close();
+            
+            _participantInfo.Show();
+        }
+
+        private void MenuItem_RaceInfo_Click(object sender, RoutedEventArgs e)
+        {
+            //_raceInfo?.Close();
+            _raceInfo.Show();
         }
     }
 }

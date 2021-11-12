@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
 using System.Windows.Media.Imaging;
 using Controller;
 using Model;
@@ -22,6 +21,8 @@ namespace WpfVisual
             Graphics = new Dictionary<Vector2, Bitmap>();
             SectionWidth = 200;
             SectionHeight = 200;
+
+            LoadTrack(track);
 
             //DrawTrack(track);
 
@@ -44,10 +45,21 @@ namespace WpfVisual
         {
             LoadTrack(track);
 
-            Bitmap bitmap = ImageHandler.GetEmptyBitmap(500,500);
+            Bitmap bitmap = ImageCache.GetEmptyBitmap(TrackWidth,TrackHeight); 
+            Graphics g = System.Drawing.Graphics.FromImage(bitmap);
+             
+            DrawSections(g);
 
-            BitmapSource bitmapSource = ImageHandler.CreateBitmapSourceFromGdiBitmap(bitmap);
+            BitmapSource bitmapSource = ImageCache.CreateBitmapSourceFromGdiBitmap(bitmap);
             return bitmapSource;
+        }
+
+        public static void DrawSections(Graphics g)
+        {
+            foreach ((Vector2 positions, Bitmap sectionGraphic) in Graphics)
+            {
+                g.DrawImage(sectionGraphic, (int)positions.X, (int)positions.Y, SectionWidth, SectionHeight);
+            }
         }
 
         private static void LoadTrack(Track track, int startX = 0, int startY = 0, int direction = 1)
@@ -68,11 +80,10 @@ namespace WpfVisual
                 if (x > maxX) maxX = x;
                 if (y > maxY) maxY = y;
 
-                //todo change to bitmap / graphic
                 Bitmap sectionGraphic = GetSectionGraphic(section.SectionType, direction);
 
                 SectionData sectionData = Data.CurrentRace.GetSectionData(section);
-                sectionGraphic = DrawParticipantsInSection(sectionGraphic, sectionData.Left, sectionData.Right);
+                sectionGraphic = DrawParticipantsInSection(sectionGraphic, sectionData.Left, sectionData.Right, direction);
 
                 Graphics.Add(new Vector2(x, y), sectionGraphic);
 
@@ -87,13 +98,51 @@ namespace WpfVisual
                 LoadTrack(track, startX, startY);
             }
 
-            TrackHeight = maxY - minY;
-            TrackWidth = maxX - minX;
+            TrackHeight = maxY - minY + SectionHeight;
+            TrackWidth = maxX - minX + SectionWidth;
         }
 
-        private static Bitmap DrawParticipantsInSection(Bitmap sectionGraphic, IParticipant sectionDataLeft, IParticipant sectionDataRight)
+        private static Bitmap DrawParticipantsInSection(Bitmap sectionGraphic, IParticipant sectionDataLeft, IParticipant sectionDataRight, int direction)
         {
+            sectionGraphic = new Bitmap(sectionGraphic);
+            Graphics g = System.Drawing.Graphics.FromImage(sectionGraphic);
+
+            if (sectionDataLeft != null)
+            {
+                Bitmap bitmapLeft = GetParticipantBitmap(sectionDataLeft, direction);
+                g.DrawImage(bitmapLeft, 75, 75, 50,50);
+            }
+            if (sectionDataRight != null)
+            {
+                Bitmap bitmapRight = GetParticipantBitmap(sectionDataRight, direction);
+                g.DrawImage(bitmapRight, 125,125,50,50);
+            }
             return sectionGraphic;
+        }
+
+        private static Bitmap GetParticipantBitmap(IParticipant participant, int direction)
+        {
+            string teamColor = participant.TeamColor.ToString();
+            Bitmap bitmap = direction switch
+            {
+                0 => ImageCache.GetBitmapFromImage($@"{teamColor}\{RacerTop}"),
+                1 => ImageCache.GetBitmapFromImage($@"{teamColor}\{RacerRight}"),
+                2 => ImageCache.GetBitmapFromImage($@"{teamColor}\{RacerBottom}"),
+                3 => ImageCache.GetBitmapFromImage($@"{teamColor}\{RacerLeft}"),
+                _ => null,
+            };
+
+            bitmap = new Bitmap(bitmap);
+            Graphics g = System.Drawing.Graphics.FromImage(bitmap);
+
+            if (participant.Equipment is {IsBroken: true})
+            {
+                Bitmap broken = ImageCache.GetBitmapFromImage(Broken);
+                g.DrawImage(broken, 0, 0, 50, 50);
+            }
+            
+
+            return bitmap;
         }
 
         private static void UpdateDirection(ref int direction, SectionTypes sectionType)
@@ -142,45 +191,65 @@ namespace WpfVisual
                 case SectionTypes.StartGrid:
                 case SectionTypes.Straight:
                     if (direction == 1 || direction == 3)
-                        sectionName = "TrackHorizontal";
+                        sectionName = TrackHorizontal;
                     else
-                        sectionName = "TrackVertical";
+                        sectionName = TrackVertical;
 
                     break;
                 case SectionTypes.LeftCorner:
                     sectionName = direction switch
                     {
-                        1 => "CornerTopLeft",
-                        2 => "CornerTopRight",
-                        3 => "CornerBottomRight",
-                        0 => "CornerBottomLeft",
-                        _ => "CornerTopLeft"
+                        1 => CornerTopLeft,
+                        2 => CornerTopRight,
+                        3 => CornerBottomRight,
+                        0 => CornerBottomLeft,
+                        _ => CornerTopLeft
                     };
                     break;
                 case SectionTypes.RightCorner:
                     sectionName = direction switch
                     {
-                        1 => "CornerBottomLeft",
-                        2 => "CornerTopLeft",
-                        3 => "CornerTopRight",
-                        0 => "CornerBottomRight",
-                        _ => "CornerBottomLeft"
+                        1 => CornerBottomLeft,
+                        2 => CornerTopLeft,
+                        3 => CornerTopRight,
+                        0 => CornerBottomRight,
+                        _ => CornerBottomLeft
                     };
                     break;
                 case SectionTypes.Finish:
                     if (direction == 1 || direction == 3)
-                        sectionName = "FinishHorizontal";
+                        sectionName = FinishHorizontal;
                     else
-                        sectionName = "FinishVertical";
+                        sectionName = FinishVertical;
 
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(sectionType), sectionType, null);
             }
 
-            Bitmap bitmap = ImageHandler.GetSectionImage(sectionName);
+            Bitmap bitmap = ImageCache.GetBitmapFromImage(sectionName);
             return bitmap;
         }
+
+        #region graphics
+
+        private const string FinishHorizontal = @"FinishHorizontal.png";
+        private const string FinishVertical = @"FinishVertical.png";
+        private const string TrackHorizontal = @"TrackHorizontal.png";
+        private const string TrackVertical = @"TrackVertical.png";
+        private const string CornerTopLeft = @"CornerTopLeft.png";
+        private const string CornerTopRight = @"CornerTopRight.png";
+        private const string CornerBottomLeft = @"CornerBottomLeft.png";
+        private const string CornerBottomRight = @"CornerBottomRight.png";
+
+        private const string RacerTop = @"RacerTop.png";
+        private const string RacerRight = @"RacerRight.png";
+        private const string RacerBottom = @"RacerBottom.png";
+        private const string RacerLeft = @"RacerLeft.png";
+        private const string Broken = @"Broken.png";
+
+
+        #endregion
 
 
     }

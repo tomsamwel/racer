@@ -7,28 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="graphics\cornerBottomLeft.png" />
-    <None Remove="graphics\cornerBottomRight.png" />
-    <None Remove="graphics\cornerTopLeft.png" />
-    <None Remove="graphics\cornerTopRight.png" />
-    <None Remove="graphics\finishHorizontal.png" />
-    <None Remove="graphics\finishVertical.png" />
-    <None Remove="graphics\trackHorizontal.png" />
-    <None Remove="graphics\trackVertical.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="graphics\CornerBottomLeft.png" />
-    <Content Include="graphics\CornerBottomRight.png" />
-    <Content Include="graphics\CornerTopLeft.png" />
-    <Content Include="graphics\CornerTopRight.png" />
-    <Content Include="graphics\FinishHorizontal.png" />
-    <Content Include="graphics\FinishVertical.png" />
-    <Content Include="graphics\TrackHorizontal.png" />
-    <Content Include="graphics\TrackVertical.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>
 
